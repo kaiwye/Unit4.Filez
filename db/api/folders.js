@@ -1,16 +1,16 @@
 import express from "express";
-const foldersRouter = express.Router();
-export default foldersRouter;
+const router = express.Router();
+export default router;
 
 import { getFolders, getFolder } from "#db/queries/folders";
 import { getFilesByFolderId, createFile } from "#db/queries/files";
 
-foldersRouter.route("/").get(async (req, res) => {
+router.route("/").get(async (req, res) => {
   const folders = await getFolders();
   res.send(folders);
 });
 
-foldersRouter.param("id", async (req, res, next, id) => {
+router.param("id", async (req, res, next, id) => {
   if (!/^\d+$/.test(id)) {
     return res.status(400).send("Id must be a positive integer");
   }
@@ -26,7 +26,7 @@ foldersRouter.param("id", async (req, res, next, id) => {
   }
 });
 
-foldersRouter.route("/:id").get(async (req, res, next) => {
+router.route("/:id").get(async (req, res, next) => {
   try {
     const files = await getFilesByFolderId(req.folder.id);
     res.send({ ...req.folder, files });
@@ -35,7 +35,7 @@ foldersRouter.route("/:id").get(async (req, res, next) => {
   }
 });
 
-foldersRouter
+router
   .route("/:id/files")
   .get(async (req, res, next) => {
     try {
